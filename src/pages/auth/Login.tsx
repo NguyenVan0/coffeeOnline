@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSmile } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { serverConfig } from "../../const/serverConfig";
+import Webcam from "react-webcam";
 export function Login() {
   const webcamRef = useRef<any>();
   const [isLoginWithFace, setIsLoginWithFace] = useState(false);
@@ -26,33 +27,9 @@ export function Login() {
         // Tạo một đối tượng FormData và thêm file vào đó
         const formData = new FormData();
         formData.append("image", file);
-
-        const params = {
-          crop_size: 112,
-          headpose: 0,
-          yaw_thresh: 30,
-          pitch_thresh: 30,
-          skip_frame_ratio: 0,
-          maxkeep: 20,
-          crop_region: [],
-          roi_list: [],
-          conf_thres: 0.5,
-          iou_thres: 0.6,
-          img_size: 640,
-          visualize: 0,
-          facedb_name: "all_face",
-          face_thresh: 0.5,
-          limit: 5,
-        };
-        const params_str = JSON.stringify(params);
-        // const url = `http://localhost:8080/api/v1/search-image`;
         const url = `${serverConfig.server}/api/v1/search-image`;
-
         axios
           .post(url, formData, {
-            params: {
-              config_param: params_str,
-            },
             headers: {
               "Content-Type": "application/octet-stream", // Đặt kiểu content-type cho dữ liệu byteArray
             },
@@ -61,16 +38,20 @@ export function Login() {
             if (!response?.data?.data) {
             } else {
               setIsLoginWithFace(false);
-              // dispatch(actions.AuthActions.userInfo(response.data?.data));
-              localStorage.setItem("role", response.data?.data.id_position);
-              localStorage.setItem("username", response.data?.data.TaiKhoan);
-              localStorage.setItem("name", response.data?.data.name);
-              localStorage.setItem("token", response.data?.data.access_token);
+
+              localStorage.setItem("id", response?.data.data.id);
+              localStorage.setItem("username", response?.data.data.username);
+              localStorage.setItem("name", response?.data.data.name);
+              localStorage.setItem("token", response?.data.data.access_token);
               localStorage.setItem(
                 "refresh_token",
-                response.data.refresh_token
+                response?.data.data.refresh_token
               );
-              navigate("/"); 
+              localStorage.setItem(
+                "permissions",
+                response?.data.data.permissions
+              );
+              navigate("/");
             }
           })
           .catch((error) => {
@@ -83,22 +64,26 @@ export function Login() {
   };
   useEffect(() => {
     if (isLoginWithFace) {
-      setInterval(async () => {
+      const intervalId = setInterval(async () => {
         handleTest();
       }, 100);
-    }
 
-    return () => {
-      // clearInterval(intervalId);
-      // setIsLoginWithFace(false);
-    };
+      const timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+        setIsLoginWithFace(false);
+        message.error("Đăng nhập thất bại");
+      }, 5000); // 10 giây
+
+      return () => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+      };
+    }
   }, [isLoginWithFace]);
 
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  // const dispatch = useDispatch();
-  // const actions = useAction();
 
   const onFinish = async (value: any) => {
     try {
@@ -111,12 +96,12 @@ export function Login() {
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("token", res.data.access_token);
         localStorage.setItem("refresh_token", res.data.refresh_token);
-        localStorage.setItem("permissions", res.data.permissions)
+        localStorage.setItem("permissions", res.data.permissions);
       } else {
         message.error(res.message);
       }
-        console.log("đăng nhập thành côgn")
-        navigate("/"); 
+      console.log("đăng nhập thành côgn");
+      navigate("/");
     } catch (err) {
       console.log(err);
       message.error("Đăng nhập thất bại");
@@ -146,11 +131,11 @@ export function Login() {
           span={8}
         >
           <img
-        src={Logo}
-        className="logo-login"
-        alt="Logo"
-        style={{ height: "250px", width: "auto" }}
-      />
+            src={Logo}
+            className="logo-login"
+            alt="Logo"
+            style={{ height: "250px", width: "auto" }}
+          />
           <div
             style={{
               fontSize: "25px",
@@ -163,7 +148,7 @@ export function Login() {
             ĐĂNG NHẬP WEB CAFFE
           </div>
           <div style={{ margin: "30px", width: "75%" }}>
-            {/* {isLoginWithFace ? (
+            {isLoginWithFace ? (
               <div style={{ height: "300px", width: "300px" }}>
                 <div
                   className="appvide"
@@ -179,9 +164,8 @@ export function Login() {
                 >
                   stop
                 </Button>
-                <Button onClick={handleTest}>Test</Button>
               </div>
-            ) : ( */}
+            ) : (
               <Form form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item
                   style={{ marginBottom: "7px" }}
@@ -244,14 +228,18 @@ export function Login() {
                         cursor: "pointer",
                       }}
                       icon={faFaceSmile}
+                      onClick={() => {
+                        console.log("check ");
+                        setIsLoginWithFace(true);
+                      }}
                     />
                   </div>
                 </Form.Item>
               </Form>
-            {/* )} */}
+            )}
           </div>
         </Col>
       </Row>
     </div>
   );
-};
+}

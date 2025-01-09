@@ -30,16 +30,69 @@ export function OrderManagement() {
   const [form] = Form.useForm();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState<any>();
+
+  const handleIsOpen = () => {
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  const nameAdress = async (lat: any, lng: any) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+        {
+          headers: {
+            "Accept-Language": "vi",
+          },
+        }
+      );
+      return response.data.display_name;
+    } catch (e) {
+      console.log(e);
+      return "";
+    }
+  };
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const response = await orderServices.getOrder({ page: 1, size: 10 });
       const data = response?.data?.data || [];
+      console.log(data);
+
+      // const ordersWithAddress = await Promise.all(
+      //   data.map(async (order: any) => {
+      //     try {
+      //       if (order?.address) {
+      //         const result = order.address.replace(/[\[\]]/g, "");
+      //         const split = result.split(",");
+
+      //         const address = await nameAdress(split[0], split[1]);
+      //         console.log(address);
+      //         return {
+      //           ...order,
+      //           address: address,
+      //         };
+      //       } else {
+      //         return { ...order, address: "" };
+      //       }
+      //     } catch (error) {
+      //       console.error(
+      //         `Lỗi khi lấy địa chỉ cho đơn hàng ${order.id}:`,
+      //         error
+      //       );
+      //       return {
+      //         ...order,
+      //         address: "Không thể lấy địa chỉ",
+      //       };
+      //     }
+      //   })
+      // );
       setOrders(data);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách đơn hàng:", error);
@@ -64,43 +117,6 @@ export function OrderManagement() {
     }
   };
 
-  const getAddressFromCoordinates = async (
-    lat: number,
-    lng: number
-  ): Promise<string> => {
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
-      );
-      return response.data?.display_name || "Không xác định";
-    } catch (error) {
-      console.error("Lỗi khi chuyển tọa độ thành địa chỉ:", error);
-      return "Không xác định";
-    }
-  };
-
-  const AddressRenderer: React.FC<{ coordinates: [number, number] }> = ({
-    coordinates,
-  }) => {
-    const [address, setAddress] = useState<string>("Đang xử lý...");
-
-    useEffect(() => {
-      const fetchAddress = async () => {
-        if (Array.isArray(coordinates) && coordinates.length === 2) {
-          const [lat, lng] = coordinates;
-          const resolvedAddress = await getAddressFromCoordinates(lat, lng);
-          setAddress(resolvedAddress);
-        } else {
-          setAddress("Không xác định");
-        }
-      };
-
-      fetchAddress();
-    }, [coordinates]);
-
-    return <span>{address}</span>;
-  };
-
   const columns = [
     {
       title: "STT",
@@ -116,19 +132,20 @@ export function OrderManagement() {
       title: "Tên khách hàng",
       dataIndex: "customer",
       key: "customer",
-      render: (customer: { name: string }) => customer?.name || "Không xác định",
+      render: (customer: { name: string }) =>
+        customer?.name || "Không xác định",
     },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
-      render: (coordinates: [number, number]) =>
-        Array.isArray(coordinates) && coordinates.length === 2 ? (
-          <AddressRenderer coordinates={coordinates} />
-        ) : (
-          "Không xác định"
-        ),
-    },
+    // {
+    //   title: "Địa chỉ",
+    //   dataIndex: "address",
+    //   key: "address",
+    //   // render: (coordinates: [number, number]) =>
+    //   //   Array.isArray(coordinates) && coordinates.length === 2 ? (
+    //   //     <AddressRenderer coordinates={coordinates} />
+    //   //   ) : (
+    //   //     "Không xác định"
+    //   //   ),
+    // },
     {
       title: "Tổng tiền",
       dataIndex: "total_price",
@@ -180,20 +197,43 @@ export function OrderManagement() {
     },
   ];
 
+  const handleOpenDetail = (record: any) => {
+    console.log(record);
+    setData(record);
+    setIsOpen(true);
+  };
+
   return (
-    <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-    <div style={{ maxWidth: '80%', width: '100%' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Quản lý đơn hàng</h1>
-      <Table
-        columns={columns}
-        dataSource={orders}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 5 }}
-        bordered
+    <div style={{ padding: "20px", display: "flex", justifyContent: "center" }}>
+      <div style={{ maxWidth: "80%", width: "100%" }}>
+        <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
+          Quản lý đơn hàng
+        </h1>
+        <Table
+          columns={columns}
+          dataSource={orders}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 5 }}
+          bordered
+          onRow={(record, index) => ({
+            onClick: () => {
+              handleOpenDetail(record);
+            },
+            style: {
+              cursor: "pointer",
+            },
+          })}
+        />
+      </div>
+      <Detail
+        data={data}
+        isOpen={isOpen}
+        handleModal={handleIsOpen}
+        setData={setData}
       />
     </div>
-  </div>  
   );
-};
+}
 
+const Detail = React.lazy(() => import("./Detail"));

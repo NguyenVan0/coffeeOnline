@@ -73,7 +73,7 @@ export function Header() {
               border: "none",
               cursor: "pointer",
               position: "relative",
-              top: "5px"
+              top: "5px",
             }}
           >
             <User size={25} style={{ marginRight: "5px" }} />
@@ -86,10 +86,12 @@ export function Header() {
               {localStorage.getItem("username") ? (
                 <>
                   <DropdownItem>
-                    <span>
-                      <SignOut size={22} style={{ marginRight: "8px" }} />
-                      Tài khoản
-                    </span>
+                    <Link to="/edit-account">
+                      <span>
+                        <SignOut size={22} style={{ marginRight: "8px" }} />
+                        Tài khoản
+                      </span>
+                    </Link>
                   </DropdownItem>
                   <DropdownItem>
                     <Link to="/infoOrder">
@@ -102,7 +104,7 @@ export function Header() {
                   <DropdownItem
                     onClick={() => {
                       localStorage.clear(); // Xóa toàn bộ dữ liệu trong localStorage
-}}
+                    }}
                   >
                     <Link to="/login">
                       <span>
