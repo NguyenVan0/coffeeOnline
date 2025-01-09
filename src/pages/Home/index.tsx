@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
-import { ProductCard } from '../../components/ProductCard';
-import { ProductProps, TAGS } from '../../utils/data/products';
-import { Hero } from './components/Hero';
-import { getProduct } from '../../utils/services/productServices ';
-import { categoryServices } from '../../utils/services/categoryServices';
-import { Catalog, Heading, Items, TagItem, Tags } from './styles';
+import { useState, useEffect } from "react";
+import { ProductCard } from "../../components/ProductCard";
+import { ProductProps } from "../../utils/data/products";
+import { Hero } from "./components/Hero";
+import { getProduct } from "../../utils/services/productServices ";
+import { categoryServices } from "../../utils/services/categoryServices";
+import { Catalog, Heading, Items, TagItem, Tags } from "./styles";
 
 export function Home() {
   const [products, setProducts] = useState<ProductProps[]>([]);
-  const [searchCatelogy, setSearchCatelogy] = useState('');
+  const [searchCatelogy, setSearchCatelogy] = useState("");
   const [categories, setCategoris] = useState([]);
   // Lấy danh sách sản phẩm từ API
   const fetchProducts = () => {
     getProduct({
       page: 1,
-      limit: 100, 
-      id_category: searchCatelogy
+      limit: 100,
+      id_category: searchCatelogy,
     })
       .then((res: any) => {
         const fetchedProducts = res?.data?.data?.map((item: any) => ({
@@ -29,21 +29,24 @@ export function Home() {
         setProducts(fetchedProducts);
       })
       .catch((e: any) => {
-        console.error('Lỗi khi lấy sản phẩm:', e);
+        console.error("Lỗi khi lấy sản phẩm:", e);
       });
   };
   const getCategory = () => {
-    categoryServices.get({
-      page: 1,
-      size: 100
-    }).then((res) => {
-      if(res.status) {
-        setCategoris(res.data.data)
-      }
-    }).catch((err: any) => {
-      console.log(err)
-    })
-  }
+    categoryServices
+      .get({
+        page: 1,
+        size: 100,
+      })
+      .then((res) => {
+        if (res.status) {
+          setCategoris(res.data.data);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
 
   // Lấy sản phẩm theo tag
   const handleGetProductsByTag = (tag: any) => {
@@ -65,7 +68,7 @@ export function Home() {
           <h1>Quán cà phê của chúng tôi</h1>
 
           <Tags>
-            {categories.map((categorie :any) => (
+            {categories.map((categorie: any) => (
               <TagItem
                 key={categorie?.id}
                 onClick={() => handleGetProductsByTag(categorie?.id)}

@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Tag,
-  Input,
-  Card,
-  Modal,
-  Form,
-  Row,
-  Col,
-  message,
-} from "antd";
-import axios from "axios";
+import { Table, Button, Tag, message } from "antd";
 import orderServices from "../../utils/services/orderOnlineServices";
-import dayjs from "dayjs";
 
 interface Order {
   id: number;
@@ -27,7 +14,6 @@ interface Order {
 }
 
 export function OrderManagement() {
-  const [form] = Form.useForm();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,23 +26,6 @@ export function OrderManagement() {
   useEffect(() => {
     fetchOrders();
   }, []);
-
-  const nameAdress = async (lat: any, lng: any) => {
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-        {
-          headers: {
-            "Accept-Language": "vi",
-          },
-        }
-      );
-      return response.data.display_name;
-    } catch (e) {
-      console.log(e);
-      return "";
-    }
-  };
 
   const fetchOrders = async () => {
     try {
@@ -218,6 +187,7 @@ export function OrderManagement() {
           bordered
           onRow={(record, index) => ({
             onClick: () => {
+              console.log(index);
               handleOpenDetail(record);
             },
             style: {

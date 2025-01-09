@@ -1,14 +1,4 @@
-import {
-  Row,
-  Input,
-  Col,
-  Modal,
-  Button,
-  Form,
-  Select,
-  Descriptions,
-  Table,
-} from "antd";
+import { Row, Col, Modal, Descriptions, Table } from "antd";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ColumnType } from "antd/es/table";

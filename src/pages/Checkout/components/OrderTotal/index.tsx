@@ -1,11 +1,10 @@
-import { useCart } from '../../../../hooks/useCart'
-import { format } from '../../../../utils/functions/formatter'
-import { Label, OrderTotalContainer, Price } from './styles'
+import { useCart } from "../../../../hooks/useCart";
+import { Label, OrderTotalContainer, Price } from "./styles";
 
 export function OrderTotal() {
-  const { fee, subtotal, total } = useCart()
+  const { fee, subtotal, total } = useCart();
   function formatPrice(value: number): string {
-    return new Intl.NumberFormat('vi-VN').format(value);
+    return new Intl.NumberFormat("vi-VN").format(value);
   }
   return (
     <OrderTotalContainer>
@@ -18,5 +17,5 @@ export function OrderTotal() {
       <Label $bold>Tổng cộng</Label>
       <Price $bold>{formatPrice(total)} VNĐ</Price>
     </OrderTotalContainer>
-  )
+  );
 }

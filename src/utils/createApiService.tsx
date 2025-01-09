@@ -99,6 +99,7 @@ const _makeAuthRequest = (instantAxios: any) => async (args: any) => {
           //     .post(`${serverConfig.server}/api/v1/auth/refresh`,
           //     { headers: {Authorization : `Bearer ${refreshToken}`} }
           //     )
+          console.log(resolve);
 
           axios({
             method: "POST",
@@ -107,8 +108,8 @@ const _makeAuthRequest = (instantAxios: any) => async (args: any) => {
               Authorization: "Bearer " + refreshToken,
             },
             data: {
-              refresh_token: refreshToken
-            }
+              refresh_token: refreshToken,
+            },
           })
             .then(({ data }) => {
               console.log("check data", data);

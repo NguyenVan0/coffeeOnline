@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { Form, Button, Input, Row, Col, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import registerBack from "../../assets/images/login-v2.svg";
+
 import Logo from "../../assets/images/snapedit_1702777474789.png";
 import { authServices } from "../../utils/services/authService ";
 
@@ -64,12 +63,12 @@ export function Register() {
           span={24}
         >
           <img
-        src={Logo}
-        className="logo-login"
-        alt="Logo"
-        style={{ height: "250px", width: "auto" }}
-      />
-      
+            src={Logo}
+            className="logo-login"
+            alt="Logo"
+            style={{ height: "250px", width: "auto" }}
+          />
+
           <div
             style={{
               fontSize: "25px",
@@ -110,7 +109,7 @@ export function Register() {
               >
                 <Input placeholder="Tên đăng nhập" />
               </Form.Item>
-  
+
               <Form.Item
                 style={{ marginBottom: "15px" }}
                 label="Họ và tên"
@@ -124,7 +123,7 @@ export function Register() {
               >
                 <Input placeholder="Họ và tên" />
               </Form.Item>
-  
+
               <Form.Item
                 label="Mật khẩu"
                 name="password"
@@ -137,7 +136,7 @@ export function Register() {
               >
                 <Input.Password placeholder="Mật khẩu" />
               </Form.Item>
-  
+
               <Form.Item
                 label="Email"
                 name="email"
@@ -154,7 +153,7 @@ export function Register() {
               >
                 <Input placeholder="Email" />
               </Form.Item>
-  
+
               <Form.Item
                 label="Số điện thoại"
                 name="phone_number"
@@ -167,7 +166,7 @@ export function Register() {
               >
                 <Input placeholder="Số điện thoại" type="number" />
               </Form.Item>
-  
+
               <Form.Item>
                 <Button
                   type="primary"
@@ -187,5 +186,4 @@ export function Register() {
       </Row>
     </div>
   );
-  
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, Button, Input, Row, Col } from "antd";
 import { message } from "antd";
 import { authServices } from "../../utils/services/authService ";
@@ -81,7 +81,6 @@ export function Login() {
     }
   }, [isLoginWithFace]);
 
-  const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
@@ -110,7 +109,6 @@ export function Login() {
 
   return (
     <div className="login">
-      {contextHolder}
       <Row>
         <Col span={16}>
           <img

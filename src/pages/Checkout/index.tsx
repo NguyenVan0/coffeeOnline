@@ -1,14 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Bank, CreditCard, CurrencyDollar, Money } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { LocationPicker } from '../Address/address';
-import { ButtonPrimary } from '../../components/ButtonPrimary';
-import { InputRadio } from '../../components/Forms/InputRadio';
-import { useCart } from '../../hooks/useCart';
-import { OrderTotal } from './components/OrderTotal';
-import { ProductCardSimple } from './components/ProductCardSimple';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreditCard, CurrencyDollar, Money } from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { LocationPicker } from "../Address/address";
+import { ButtonPrimary } from "../../components/ButtonPrimary";
+import { InputRadio } from "../../components/Forms/InputRadio";
+import { useCart } from "../../hooks/useCart";
+import { OrderTotal } from "./components/OrderTotal";
+import { ProductCardSimple } from "./components/ProductCardSimple";
 import {
   Cart,
   CheckoutForm,
@@ -18,75 +18,74 @@ import {
   Order,
   PaymentMethods,
   PaymentMethodsFields,
-} from './styles';
-import customerServices from '../../utils/services/customerServices';
-import orderServices from '../../utils/services/orderOnlineServices';
+} from "./styles";
+import customerServices from "../../utils/services/customerServices";
+import orderServices from "../../utils/services/orderOnlineServices";
 
 const checkoutFormValidation = z.object({
-  paymentMethod: z.enum(['creditCard', 'debitCard', 'cash'], {
-    message: 'Vui lòng chọn phương thức thanh toán',
+  paymentMethod: z.enum(["creditCard", "debitCard", "cash"], {
+    message: "Vui lòng chọn phương thức thanh toán",
   }),
 });
 
 export type CheckoutFormData = z.infer<typeof checkoutFormValidation>;
 
 export function Checkout() {
-  const id = localStorage.getItem('id'); // Lấy user_id từ localStorage
-  const address = localStorage.getItem('address'); // Lấy địa chỉ từ localStorage
+  const id = localStorage.getItem("id"); // Lấy user_id từ localStorage
+  const address = localStorage.getItem("address"); // Lấy địa chỉ từ localStorage
 
-  const { cart, cartTotalItems, clearCart } = useCart()
+  const { cart, cartTotalItems, clearCart } = useCart();
   const navigate = useNavigate();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<CheckoutFormData>({
-    mode: 'onSubmit',
+    mode: "onSubmit",
     resolver: zodResolver(checkoutFormValidation),
   });
 
-  const onFinish = async (values: any) => {
+  const onFinish = async () => {
     if (cartTotalItems < 1) {
-      alert('Giỏ hàng trống.')
-      return
+      alert("Giỏ hàng trống.");
+      return;
     }
-  
+
     try {
       const customerResponse = await customerServices.getCustomer({
         user_id: id,
-      })
-  
+      });
+
       if (customerResponse?.data?.data?.length > 0) {
-        const id_customer = customerResponse.data.data[0]?.id
-        localStorage.setItem('idCustomer', id_customer)
-  
+        const id_customer = customerResponse.data.data[0]?.id;
+        localStorage.setItem("idCustomer", id_customer);
+
         const dataSubmit = {
           id_customer,
           address: address
             ? `[${JSON.parse(address).lat}, ${JSON.parse(address).lng}]`
-            : '',
+            : "",
           order_details: cart.map((product) => ({
             id_product: product.id,
             quanity: product.quantity,
             price: product.price,
           })),
-        }
-  
-        const orderResponse = await orderServices.createOrder(dataSubmit)
-  
-        console.log('chuyển hướng:', orderResponse.data)
-        clearCart() // Xóa toàn bộ giỏ hàng sau khi đặt hàng thành công
-        navigate(`/order/${orderResponse.data.id}`)
+        };
+
+        const orderResponse = await orderServices.createOrder(dataSubmit);
+
+        console.log("chuyển hướng:", orderResponse.data);
+        clearCart(); // Xóa toàn bộ giỏ hàng sau khi đặt hàng thành công
+        navigate(`/order/${orderResponse.data.id}`);
       } else {
-        console.error('Không tìm thấy khách hàng:', customerResponse?.data)
-        alert('Không thể xác định thông tin khách hàng.')
+        console.error("Không tìm thấy khách hàng:", customerResponse?.data);
+        alert("Không thể xác định thông tin khách hàng.");
       }
     } catch (error) {
-      console.error('Lỗi khi gọi API:', error)
-      alert('Đã xảy ra lỗi khi xử lý thông tin. Vui lòng thử lại sau.')
+      console.error("Lỗi khi gọi API:", error);
+      alert("Đã xảy ra lỗi khi xử lý thông tin. Vui lòng thử lại sau.");
     }
-  }
-  
+  };
 
   const isCompleteOrderButtonDisabled = cartTotalItems === 0;
 
@@ -115,18 +114,24 @@ export function Checkout() {
                 <InputRadio
                   id="creditCard"
                   defaultValue="creditCard"
-                  {...register('paymentMethod')}
+                  {...register("paymentMethod")}
                 >
                   <CreditCard size={16} />
                   Thẻ tín dụng
                 </InputRadio>
-                <InputRadio id="cash" defaultValue="cash" {...register('paymentMethod')}>
+                <InputRadio
+                  id="cash"
+                  defaultValue="cash"
+                  {...register("paymentMethod")}
+                >
                   <Money size={16} />
                   Tiền mặt
                 </InputRadio>
 
                 {errors.paymentMethod && (
-                  <InputRadioError>{errors.paymentMethod.message}</InputRadioError>
+                  <InputRadioError>
+                    {errors.paymentMethod.message}
+                  </InputRadioError>
                 )}
               </PaymentMethodsFields>
             </PaymentMethods>

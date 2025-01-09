@@ -1,18 +1,20 @@
-import { CurrencyDollar, MapPin, Timer } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams
-import { useCart } from '../../hooks/useCart';
-import { mutate } from '../../utils/functions/mutator';
-import axios from 'axios';
-import { Container, Illustration, Info, InfoIcon, OrderInfo, Row } from './styles';
-import deliveryImg from '../../assets/images/ilustracao-entregador.svg';
+import { CurrencyDollar, MapPin, Timer } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  Container,
+  Illustration,
+  Info,
+  InfoIcon,
+  OrderInfo,
+  Row,
+} from "./styles";
+import deliveryImg from "../../assets/images/ilustracao-entregador.svg";
 
 export function Order() {
-  const { id } = useParams(); // Lấy tham số id từ URL (ví dụ: 33)
-  const { order } = useCart();
-  const address = localStorage.getItem('address'); // Lấy địa chỉ từ localStorage
+  const address = localStorage.getItem("address"); // Lấy địa chỉ từ localStorage
   const parsedAddress = address ? JSON.parse(address) : null; // Parse chuỗi JSON địa chỉ
-  const [resolvedAddress, setResolvedAddress] = useState<string>(''); // Địa chỉ được chuyển đổi
+  const [resolvedAddress, setResolvedAddress] = useState<string>(""); // Địa chỉ được chuyển đổi
 
   // Hàm gọi API Nominatim để chuyển tọa độ thành địa chỉ
   const fetchAddressFromCoordinates = async (lat: number, lng: number) => {
@@ -21,18 +23,18 @@ export function Order() {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
         {
           headers: {
-            'Accept-Language': 'vi', // Chọn ngôn ngữ tiếng Việt
+            "Accept-Language": "vi", // Chọn ngôn ngữ tiếng Việt
           },
         }
       );
       if (response.data?.display_name) {
         setResolvedAddress(response.data.display_name); // Lưu địa chỉ trả về
       } else {
-        setResolvedAddress('Không tìm thấy địa chỉ');
+        setResolvedAddress("Không tìm thấy địa chỉ");
       }
     } catch (error) {
-      console.error('Lỗi khi lấy địa chỉ từ tọa độ:', error);
-      setResolvedAddress('Lỗi khi tìm địa chỉ');
+      console.error("Lỗi khi lấy địa chỉ từ tọa độ:", error);
+      setResolvedAddress("Lỗi khi tìm địa chỉ");
     }
   };
 
@@ -59,7 +61,7 @@ export function Order() {
               </InfoIcon>
 
               <p>
-                Giao hàng đến{' '}
+                Giao hàng đến{" "}
                 {resolvedAddress ? (
                   <>
                     <strong>{resolvedAddress}</strong>

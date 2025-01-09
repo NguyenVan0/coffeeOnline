@@ -14,7 +14,6 @@ import { useState, useRef } from "react";
 import { UserOutlined, LockOutlined, CameraOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { serverConfig } from "../../const/serverConfig";
-import { useSelector } from "react-redux";
 import { Container } from "../Checkout/styles";
 
 const EditAccount = () => {
@@ -83,7 +82,7 @@ const EditAccount = () => {
         handleLogin(intervalId);
       }, 100);
 
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         clearInterval(intervalId);
         message.error("Làm mới khuôn mặt thất bại");
         stopCamera();
