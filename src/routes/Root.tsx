@@ -6,6 +6,7 @@ import { Login } from '../pages/auth/Login'
 import { LocationPicker } from '../pages/Address/address'
 import { Order } from '../pages/Order'
 import { OrderManagement } from '../pages/Order/OrderManagement'
+import { Register } from '../pages/auth/Register'
 
 export const router = createBrowserRouter([
   {
@@ -22,5 +23,9 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />
+  },
+   {
+    path: '/register',
+    element: <Register />
   },
 ])

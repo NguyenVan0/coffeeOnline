@@ -19,6 +19,14 @@ const register = (data: any) => {
   });
 };
 
+const registerCustomer = (data: any) => {
+  return api.makeRequest({
+    url: `/api/v1/online/customer`,
+    method: "POST",
+    data: data
+  });
+};
+
 const changepassword = (data: any) => {
   return api.makeRequest({
     url: "/api/v1/auth/change-password",
@@ -28,5 +36,5 @@ const changepassword = (data: any) => {
 };
 
 export const authServices = {
-  login, register, changepassword
+  login, register, changepassword, registerCustomer
 };

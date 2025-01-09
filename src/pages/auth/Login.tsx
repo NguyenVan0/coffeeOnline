@@ -145,7 +145,12 @@ export function Login() {
           }}
           span={8}
         >
-          <img src={Logo} className="logo-login" alt="htht" height={200} />
+          <img
+        src={Logo}
+        className="logo-login"
+        alt="Logo"
+        style={{ height: "250px", width: "auto" }}
+      />
           <div
             style={{
               fontSize: "25px",

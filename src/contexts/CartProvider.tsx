@@ -39,6 +39,7 @@ interface CartContextProps {
   updateCart: ({ productId, quantity }: ItemQuantityProps) => void
   checkProductExistsInCart: (productId: number) => boolean
   createOrder: (data: OrderProps) => void
+  clearCart: () => void // Thêm thuộc tính này
 }
 
 interface CartProviderProps {
@@ -89,12 +90,16 @@ export function CartProvider({ children }: CartProviderProps) {
 
   function createOrder(data: OrderProps) {
     setOrder(data)
-    setCart([])
+    setCart([]) // Xóa toàn bộ giỏ hàng khi tạo đơn hàng
+  }
+
+  // Thêm hàm xóa toàn bộ giỏ hàng
+  function clearCart() {
+    setCart([]) // Xóa toàn bộ sản phẩm trong giỏ hàng
   }
 
   useEffect(() => {
     const cartStateToJson = JSON.stringify(cart)
-
     localStorage.setItem('@coffee-delivery:cart-1.0.0', cartStateToJson)
   }, [cart])
 
@@ -102,7 +107,6 @@ export function CartProvider({ children }: CartProviderProps) {
   const fee = cartTotalItems > 0 ? 3.5 : 0
   const subtotal = cart.reduce((acc, product) => {
     acc += product.price * product.quantity
-
     return acc
   }, 0)
   const total = subtotal + fee
@@ -121,6 +125,7 @@ export function CartProvider({ children }: CartProviderProps) {
         updateCart,
         checkProductExistsInCart,
         createOrder,
+        clearCart, 
       }}
     >
       {children}

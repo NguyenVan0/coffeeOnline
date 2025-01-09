@@ -33,7 +33,8 @@ export type CheckoutFormData = z.infer<typeof checkoutFormValidation>;
 export function Checkout() {
   const id = localStorage.getItem('id'); // Lấy user_id từ localStorage
   const address = localStorage.getItem('address'); // Lấy địa chỉ từ localStorage
-  const { cart, cartTotalItems } = useCart();
+
+  const { cart, cartTotalItems, clearCart } = useCart()
   const navigate = useNavigate();
   const {
     handleSubmit,
@@ -46,21 +47,19 @@ export function Checkout() {
 
   const onFinish = async (values: any) => {
     if (cartTotalItems < 1) {
-      alert('Giỏ hàng trống.');
-      return;
+      alert('Giỏ hàng trống.')
+      return
     }
   
     try {
-      // Gọi API lấy thông tin khách hàng dựa trên user_id
       const customerResponse = await customerServices.getCustomer({
         user_id: id,
-      });
+      })
   
       if (customerResponse?.data?.data?.length > 0) {
-        const id_customer = customerResponse.data.data[0]?.id;
-        localStorage.setItem('idCustomer', id_customer);
+        const id_customer = customerResponse.data.data[0]?.id
+        localStorage.setItem('idCustomer', id_customer)
   
-        // Tạo payload gửi đến API
         const dataSubmit = {
           id_customer,
           address: address
@@ -71,24 +70,23 @@ export function Checkout() {
             quanity: product.quantity,
             price: product.price,
           })),
-        };
+        }
   
+        const orderResponse = await orderServices.createOrder(dataSubmit)
   
-        const orderResponse = await orderServices.createOrder(dataSubmit);
-  
-          console.log('chuyển hướng:', orderResponse.data);
-  
-          navigate(`/order/${orderResponse.data.id}`);
-     
+        console.log('chuyển hướng:', orderResponse.data)
+        clearCart() // Xóa toàn bộ giỏ hàng sau khi đặt hàng thành công
+        navigate(`/order/${orderResponse.data.id}`)
       } else {
-        console.error('Không tìm thấy khách hàng:', customerResponse?.data);
-        alert('Không thể xác định thông tin khách hàng.');
+        console.error('Không tìm thấy khách hàng:', customerResponse?.data)
+        alert('Không thể xác định thông tin khách hàng.')
       }
     } catch (error) {
-      console.error('Lỗi khi gọi API:', error);
-      alert('Đã xảy ra lỗi khi xử lý thông tin. Vui lòng thử lại sau.');
+      console.error('Lỗi khi gọi API:', error)
+      alert('Đã xảy ra lỗi khi xử lý thông tin. Vui lòng thử lại sau.')
     }
-  };  
+  }
+  
 
   const isCompleteOrderButtonDisabled = cartTotalItems === 0;
 

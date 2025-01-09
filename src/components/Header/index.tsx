@@ -8,7 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
 import logoImg from "../../assets/images/logo.svg";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Actions,
   Cart,
@@ -22,17 +22,26 @@ import {
 export function Header() {
   const { cartTotalItems } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const userData = localStorage.getItem("username");
+
   const toggleMenu = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
 
-  const closeMenu = (e: React.MouseEvent) => {
-    // Đảm bảo không đóng menu nếu click vào nút
-    e.stopPropagation();
-    setIsMenuOpen(false);
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setIsMenuOpen(false);
+    }
   };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <HeaderContainer>
@@ -53,7 +62,7 @@ export function Header() {
           {cartTotalItems > 0 && <CartItems>{cartTotalItems}</CartItems>}
         </Cart>
 
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative" }} ref={menuRef}>
           {/* Button để bật/tắt menu */}
           <button
             onClick={toggleMenu}
@@ -63,6 +72,8 @@ export function Header() {
               background: "none",
               border: "none",
               cursor: "pointer",
+              position: "relative",
+              top: "5px"
             }}
           >
             <User size={25} style={{ marginRight: "5px" }} />
@@ -71,58 +82,57 @@ export function Header() {
 
           {/* Dropdown Menu */}
           {isMenuOpen && (
-           <DropdownMenu>
-           {localStorage.getItem("username") ? (
-             <>
-               <DropdownItem onClick={closeMenu}>
-                 <span>
-                   <SignOut size={22} style={{ marginRight: "8px" }} />
-                   Tài khoản
-                 </span>
-               </DropdownItem>
-               <DropdownItem>
-                 <Link to="/infoOrder">
-                   <span>
-                     <SignOut size={22} style={{ marginRight: "8px" }} />
-                     Đơn hàng
-                   </span>
-                 </Link>
-               </DropdownItem>
-               <DropdownItem
-                 onClick={() => {
-                   localStorage.clear(); // Xóa toàn bộ dữ liệu trong localStorage
-                 }}
-               >
-                 <Link to="/login">
-                   <span>
-                     <SignOut size={22} style={{ marginRight: "8px" }} />
-                     Đăng xuất
-                   </span>
-                 </Link>
-               </DropdownItem>
-             </>
-           ) : (
-            <>
-             <DropdownItem>
-               <Link to="/register">
-                 <span>
-                   <SignOut size={22} style={{ marginRight: "8px" }} />
-                   Đăng ký
-                 </span>
-               </Link>
-             </DropdownItem>
-               <DropdownItem>
-               <Link to="/login">
-                 <span>
-                   <SignOut size={22} style={{ marginRight: "8px" }} />
-                   Đăng nhập
-                 </span>
-               </Link>
-             </DropdownItem>
-             </>
-           )}
-         </DropdownMenu>
-         
+            <DropdownMenu>
+              {localStorage.getItem("username") ? (
+                <>
+                  <DropdownItem>
+                    <span>
+                      <SignOut size={22} style={{ marginRight: "8px" }} />
+                      Tài khoản
+                    </span>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <Link to="/infoOrder">
+                      <span>
+                        <SignOut size={22} style={{ marginRight: "8px" }} />
+                        Đơn hàng
+                      </span>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      localStorage.clear(); // Xóa toàn bộ dữ liệu trong localStorage
+}}
+                  >
+                    <Link to="/login">
+                      <span>
+                        <SignOut size={22} style={{ marginRight: "8px" }} />
+                        Đăng xuất
+                      </span>
+                    </Link>
+                  </DropdownItem>
+                </>
+              ) : (
+                <>
+                  <DropdownItem>
+                    <Link to="/register">
+                      <span>
+                        <SignOut size={22} style={{ marginRight: "8px" }} />
+                        Đăng ký
+                      </span>
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <Link to="/login">
+                      <span>
+                        <SignOut size={22} style={{ marginRight: "8px" }} />
+                        Đăng nhập
+                      </span>
+                    </Link>
+                  </DropdownItem>
+                </>
+              )}
+            </DropdownMenu>
           )}
         </div>
       </Actions>

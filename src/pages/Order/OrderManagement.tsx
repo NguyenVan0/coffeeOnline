@@ -30,8 +30,6 @@ export function OrderManagement() {
   const [form] = Form.useForm();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     fetchOrders();
