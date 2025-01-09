@@ -59,6 +59,14 @@ export function Header() {
                 </span>
               </DropdownItem>
               <DropdownItem>
+                <Link to="/infoOrder">
+                  <span>
+                    <SignOut size={22} style={{ marginRight: '8px' }} />
+                    Đơn hàng
+                  </span>
+                </Link>
+              </DropdownItem>
+              <DropdownItem>
                 <Link to="/login">
                   <span>
                     <SignOut size={22} style={{ marginRight: '8px' }} />
