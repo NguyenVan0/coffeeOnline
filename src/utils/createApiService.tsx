@@ -113,15 +113,16 @@ const _makeAuthRequest = (instantAxios: any) => async (args: any) => {
           })
             .then(({ data }) => {
               console.log("check data", data);
-              // if (data.status) {
-              //   Auth.saveToken(data.data);
-              //   axios.defaults.headers.common["Authorization"] =
-              //     "Bearer " + data.data;
-              //   originalRequest.headers["Authorization"] =
-              //     "Bearer " + data.data;
-              //   processQueue(null, data.data);
-              //   resolve(axios(originalRequest));
-              // }
+              if (data.status) {
+                // Auth.saveToken(data.data);
+                window.localStorage.setItem("token", data.data);
+                axios.defaults.headers.common["Authorization"] =
+                  "Bearer " + data.data;
+                originalRequest.headers["Authorization"] =
+                  "Bearer " + data.data;
+                processQueue(null, data.data);
+                resolve(axios(originalRequest));
+              }
             })
             .catch((err) => {
               processQueue(err, null);
